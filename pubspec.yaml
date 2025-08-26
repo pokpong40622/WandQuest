@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.1.5
   flutter_blue_plus: ^1.35.5
   carousel_slider: ^5.1.1
+  permission_handler: ^11.4.0
 
 dev_dependencies:
   flutter_test:

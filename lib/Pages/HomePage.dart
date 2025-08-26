@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wandquest/RaceGame/RaceStartLevel3.dart';
+import 'package:wandquest/BluetoothPages.dart/FindingPage.dart';
 import 'package:wandquest/SqueezeGame/SqueezeStartLevel3.dart';
+import 'package:wandquest/RaceGame/RaceStartLevel3.dart';
+import 'package:wandquest/PoseGame/PoseStartLevel3.dart';
 import 'package:wandquest/colors.dart'; // Your custom colors file
-import 'package:carousel_slider/carousel_slider.dart'; // Import the package
+import 'package:carousel_slider/carousel_slider.dart'; 
 
-// You can move this custom widget to its own file to reuse it elsewhere.
 class StrokedGradientText extends StatelessWidget {
   const StrokedGradientText({
     super.key,
@@ -225,7 +227,6 @@ class QuestCard extends StatelessWidget {
   }
 }
 
-// --- UPDATED WIDGET FOR SHOP ITEMS ---
 class ShopItemCard extends StatelessWidget {
   const ShopItemCard({
     super.key,
@@ -308,7 +309,7 @@ class ShopItemCard extends StatelessWidget {
                     child: StrokedText(
                       text: label,
                       color: Colors.white,
-                      fontSize: size == 142 ? 28 : 20,
+                      fontSize: size == 140 ? 28 : 20,
                       strokeWidth: 1.4,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 2.2,
@@ -357,7 +358,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedUpgradeIndex = 0;
 
   Set<int> _purchasedThemes = {};
-  Set<int> _purchasedUpgrades = {}; // LV.2 is no longer pre-purchased
+  Set<int> _purchasedUpgrades = {};
 
   final List<Map<String, String>> singlePlayerItems = [
     {'name': 'Run', 'path': 'assets/RunCard.png'},
@@ -369,6 +370,104 @@ class _HomePageState extends State<HomePage> {
     {'name': 'Relay', 'path': 'assets/RelayCard.png'},
     {'name': 'Race', 'path': 'assets/RaceCard.png'},
   ];
+
+  // --- NEW BLUETOOTH DIALOG ---
+  void _showBluetoothDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF8827D7), width: 4),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const StrokedGradientText(
+                  text: 'Bluetooth',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  strokeWidth: 5,
+                  gradient: LinearGradient(colors: [Color(0xFFFE5190), Color(0xFF8827D7)]),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Bluetooth is not connected.\nConnect now?",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFF4c0082),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        width: 100,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF06A59),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF4c0082), width: 3),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                        ),
+                        child: const Center(
+                          child: StrokedText(
+                            text: 'CANCEL',
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            strokeWidth: 0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(); // Close dialog
+                        Navigator.push( // Navigate to FindingPage
+                          context,
+                          MaterialPageRoute(builder: (context) =>  FindingPage()),
+                        );
+                      },
+                      child: Container(
+                        width: 100,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF63FF94),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF4c0082), width: 3),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                        ),
+                        child: const Center(
+                          child: StrokedText(
+                            text: 'CONNECT',
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            strokeWidth: 0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   void _showPurchaseDialog(
     BuildContext context,
@@ -530,13 +629,8 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // const Icon(
-                          //   Icons.person,
-                          //   color: Colors.white,
-                          //   size: 26,
-                          // ),
                           Image.asset('assets/ProfilePic.png', width: 30),
-                          SizedBox(width: 14),
+                          const SizedBox(width: 14),
                           Text(
                             'Hi Natthan',
                             style: GoogleFonts.poppins(
@@ -549,25 +643,30 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const Spacer(),
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(500),
-                        color: const Color(0xFF00FF73),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.bluetooth,
-                          color: Colors.white,
-                          size: 26,
+                    GestureDetector(
+                      onTap: () {
+                        _showBluetoothDialog(context);
+                      },
+                      child: Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(500),
+                          color: const Color(0xFF00FF73),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.bluetooth,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Container(
-                      width: 38,
-                      height: 38,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(500),
                         color: Colors.white,
@@ -894,18 +993,26 @@ class _HomePageState extends State<HomePage> {
                 final selectedCardName =
                     activeList[_currentCarouselIndex]['name'];
                 if (selectedCardName == "Squeeze") {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  SqueezeStartLevel3(),
+                      builder: (context) =>  const SqueezeStartLevel3(),
                     ),
                   );
                 }
                 if (selectedCardName == "Race") {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  RaceStartLevel3(),
+                      builder: (context) =>  const RaceStartLevel3(),
+                    ),
+                  );
+                }
+                if (selectedCardName == "Pose") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const PoseStartLevel3(),
                     ),
                   );
                 }

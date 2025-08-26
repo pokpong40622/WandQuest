@@ -113,19 +113,19 @@ class StrokedGradientText extends StatelessWidget {
   }
 }
 
-class RacePlayingLevel3 extends StatefulWidget {
-  const RacePlayingLevel3({super.key});
+class PosePlayingLevel3 extends StatefulWidget {
+  const PosePlayingLevel3({super.key});
 
   @override
-  State<RacePlayingLevel3> createState() => _RacePlayingLevel3State();
+  State<PosePlayingLevel3> createState() => _PosePlayingLevel3State();
 }
 
-class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
+class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
   // Timer and progress variables
   Timer? _timer;
   int _remainingSeconds = 150; // 2 minutes and 30 seconds
-  final int _totalSqueezes = 300;
-  int _currentSqueezes = 150;
+  final int _totalPoses = 5;
+  int _currentPoses = 2;
 
   @override
   void initState() {
@@ -142,7 +142,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
       } else {
         timer.cancel();
         print("times up!");
-        _showRewardDialog(); // Show reward dialog when timer ends
+        _showRewardDialog();
       }
     });
   }
@@ -157,14 +157,12 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
     super.dispose();
   }
 
-  // Helper to format the time
   String _formatTime(int seconds) {
     final minutes = (seconds / 60).floor().toString().padLeft(2, '0');
     final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
     return '$minutes:$remainingSeconds';
   }
 
-  // --- NEW REWARD DIALOG ---
   void _showRewardDialog() {
     showDialog(
       context: context,
@@ -173,7 +171,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(20),
@@ -200,7 +198,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                 ),
                 const SizedBox(height: 6),
                 const StrokedText(
-                  text: '200',
+                  text: '150',
                   color: Color(0xFF333333),
                   fontSize: 100,
                   fontWeight: FontWeight.w800,
@@ -224,31 +222,23 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                       MaterialPageRoute(builder: (context) => const HomePage()),
                     );
                   },
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                    },
-                    child: Container(
-                      width: 200,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF06A59),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
-                      ),
-                      child: const Center(
-                        child: StrokedText(
-                          text: 'RETURN',
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          strokeWidth: 4,
-                          strokeColor: Color(0xFF4c0082),
-                        ),
+                  child: Container(
+                    width: 200,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF06A59),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF4c0082), width: 3),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                    ),
+                    child: const Center(
+                      child: StrokedText(
+                        text: 'RETURN',
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        strokeWidth: 4,
+                        strokeColor: Color(0xFF4c0082),
                       ),
                     ),
                   ),
@@ -261,7 +251,6 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
     );
   }
 
-  // --- PAUSE DIALOG ---
   void _showPauseDialog() {
     _pauseTimer();
     showDialog(
@@ -348,7 +337,6 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final progressPercent = _currentSqueezes / _totalSqueezes;
 
     return Scaffold(
       body: Stack(
@@ -371,15 +359,15 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Column(
                 children: [
-                  SizedBox(height: screenHeight * 0.042),
-                  // "SQUEEZE" Title
+                  SizedBox(height: screenHeight * 0.032),
+                  // "POSE" Title
                   Center(
                     child: GestureDetector(
                       onTap: _showPauseDialog,
                       child: Text(
-                        'SQUEEZE',
+                        'POSE',
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.156,
+                          fontSize: screenWidth * 0.18,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                           letterSpacing: 3.2,
@@ -387,88 +375,29 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                       ),
                     ),
                   ),
-                  // Main content row
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Progress Bar
-                        Container(
-                          width: screenWidth * 0.35,
-                          height: screenHeight * 0.55,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              // Filled portion of the progress bar
-                              FractionallySizedBox(
-                                heightFactor: progressPercent,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [Color(0xFFF99F3B), Color(0xFFF06A59)],
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                              ),
-                              // Progress Text
-                              Positioned(
-                                bottom: 16,
-                                child: Text(
-                                  '$_currentSqueezes/$_totalSqueezes',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: screenWidth * 0.056),
-                        // Quest Info and Icon Column
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const StrokedText(
-                                text: 'Quest:',
-                                color: Colors.white,
-                                fontSize: 36,
-                                fontWeight: FontWeight.w800,
-                                strokeWidth: 6,
-                                strokeColor: Color(0xFF4c0082),
-                              ),
-                              const StrokedText(
-                                text: '300 TIMES',
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                strokeWidth: 6,
-                                strokeColor: Color(0xFF4c0082),
-                              ),
-                              SizedBox(height: screenHeight * 0.08),
-                              Image.asset(
-                                'assets/SqueezeIcon.png',
-                                width: screenWidth * 0.54,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.image_not_supported, size: 100, color: Colors.white,);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                  SizedBox(height: 8),
+                  // Black container for the image
+                  Container(
+                    width: screenWidth * 0.8,
+                    height: screenHeight * 0.45,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white, width: 4)
                     ),
+                    child: const Center(child: Text('Image Area', style: TextStyle(color: Colors.white))),
                   ),
+                  SizedBox(height: 28,),
+                  // Progress Counter
+                  StrokedText(
+                    text: '$_currentPoses/$_totalPoses',
+                    color: const Color(0xFF4c0082),
+                    fontSize: 80,
+                    fontWeight: FontWeight.w800,
+                    strokeWidth: 8,
+                    strokeColor: Colors.white,
+                  ),
+                SizedBox(height: 2,), // ADJUSTED SPACE
                   // Timer at the bottom
                   Center(
                     child: StrokedGradientText(
@@ -483,7 +412,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.05),
+                  SizedBox(height: screenHeight * 0.02), // REDUCED BOTTOM PADDING
                 ],
               ),
             ),

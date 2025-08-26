@@ -5,6 +5,8 @@ import "package:wandquest/MembershipPages/LoginPage.dart";
 import "package:wandquest/MembershipPages/SignupPage.dart";
 import "package:wandquest/MembershipPages/StartPage.dart";
 import "package:wandquest/Pages/HomePage.dart";
+import "package:wandquest/PoseGame/PosePlayingLevel3.dart";
+import "package:wandquest/PoseGame/PoseStartLevel3.dart";
 import "package:wandquest/RaceGame/RaceStartLevel3.dart";
 import "package:wandquest/SqueezeGame/SqueezeStartLevel3.dart";
 
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: RaceStartLevel3(),
+      home: HomePage(),
     );
   }
 }
