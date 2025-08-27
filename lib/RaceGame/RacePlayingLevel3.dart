@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wandquest/BluetoothPages.dart/WandQuestData.dart';
 import 'package:wandquest/colors.dart'; // Assuming this is where ColorsAsset.primary is.
 import 'package:wandquest/Pages/HomePage.dart'; // Import your HomePage
 
@@ -127,13 +130,21 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
   
   // Separate progress variables for each player
   final int _totalProgress = 500;
-  int _player1Progress = 150;
-  int _player2Progress = 200;
+  int _player1Progress = 0; // Start at 0, will be updated by Bluetooth
+  int _player2Progress = 200; // Static value for now
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+  }
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Enable notifications when the widget is ready
+    final bluetoothData = Provider.of<WandQuestData>(context, listen: false);
+    bluetoothData.WandQuestNotify?.setNotifyValue(true);
   }
 
   void _startTimer() {
@@ -144,6 +155,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
         });
       } else {
         timer.cancel();
+        context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
         print("times up!");
         _showRewardDialog();
       }
@@ -301,6 +313,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
+                    context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
@@ -340,6 +353,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final bluetoothData = Provider.of<WandQuestData>(context, listen: false);
 
     return Scaffold(
       body: Stack(
@@ -380,25 +394,37 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                   ),
                   // Main content row
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Player 1 Progress Bar
-                        _buildProgressBar(
-                          context,
-                          'Player1',
-                          _player1Progress,
-                          _totalProgress,
-                        ),
-                        // Player 2 Progress Bar
-                        _buildProgressBar(
-                          context,
-                          'Player2',
-                          _player2Progress,
-                          _totalProgress,
-                        ),
-                      ],
+                    child: StreamBuilder<List<int>>(
+                      stream: bluetoothData.WandQuestNotify?.onValueReceived,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                          try {
+                            _player1Progress = int.parse(utf8.decode(snapshot.data!));
+                          } catch (e) {
+                             print("Error parsing Bluetooth data: $e");
+                          }
+                        }
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Player 1 Progress Bar
+                            _buildProgressBar(
+                              context,
+                              'Player1',
+                              _player1Progress,
+                              _totalProgress,
+                            ),
+                            // Player 2 Progress Bar
+                            _buildProgressBar(
+                              context,
+                              'Player2',
+                              _player2Progress,
+                              _totalProgress,
+                            ),
+                          ],
+                        );
+                      }
                     ),
                   ),
                   // Timer at the bottom
@@ -448,7 +474,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
         children: [
           // Filled portion
           FractionallySizedBox(
-            heightFactor: progressPercent,
+            heightFactor: progressPercent.clamp(0.0, 1.0),
             child: Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
