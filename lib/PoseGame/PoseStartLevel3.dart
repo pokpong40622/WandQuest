@@ -1,6 +1,9 @@
 import 'dart:async'; // Required for the Timer
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wandquest/BluetoothPages.dart/WandQuestData.dart';
 import 'package:wandquest/PoseGame/PosePlayingLevel3.dart';
 import 'package:wandquest/SqueezeGame/SqueezePlayingLevel3.dart';
 import 'package:wandquest/colors.dart'; // Assuming this is where ColorsAsset.primary is.
@@ -148,7 +151,9 @@ class _PoseStartLevel3State extends State<PoseStartLevel3> {
         });
       } else {
         timer.cancel();
-        // Navigate to HomePage after countdown finishes
+        
+        
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => PosePlayingLevel3()),
@@ -296,7 +301,11 @@ class _PoseStartLevel3State extends State<PoseStartLevel3> {
                             SizedBox(height: screenHeight * 0.04),
                             // Play Button
                             GestureDetector(
-                              onTap: _startCountdown,
+                              onTap: () {
+                                context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("PS"));
+                                
+                                _startCountdown();
+                              },
                               child: Container(
                                 width: 232,
                                 height: 68,

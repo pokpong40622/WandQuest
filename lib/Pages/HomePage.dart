@@ -1063,7 +1063,7 @@ class _HomePageState extends State<HomePage> {
                     activeList[_currentCarouselIndex]['name'];
                 if (selectedCardName == "Squeeze") {
                   
-                  sendStringToArduino(context, 'SS');
+                  // sendStringToArduino(context, 'SS');
 
                   Navigator.push(
                     context,
@@ -1073,7 +1073,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
                 if (selectedCardName == "Race") {
-                  sendStringToArduino(context, 'RS');
+                  // sendStringToArduino(context, 'RS');
 
                   Navigator.push(
                     context,
@@ -1084,7 +1084,7 @@ class _HomePageState extends State<HomePage> {
                 }
                 if (selectedCardName == "Pose") {
 
-                  sendStringToArduino(context, 'PS');
+                  // sendStringToArduino(context, 'PS');
 
                   Navigator.push(
                     context,

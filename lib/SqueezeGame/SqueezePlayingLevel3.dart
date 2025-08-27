@@ -244,6 +244,7 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
+                    context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
@@ -344,6 +345,7 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
+                    context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,

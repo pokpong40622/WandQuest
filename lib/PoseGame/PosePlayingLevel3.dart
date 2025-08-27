@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wandquest/BluetoothPages.dart/WandQuestData.dart';
 import 'package:wandquest/colors.dart'; // Assuming this is where ColorsAsset.primary is.
 import 'package:wandquest/Pages/HomePage.dart'; // Import your HomePage
 
@@ -123,7 +126,7 @@ class PosePlayingLevel3 extends StatefulWidget {
 class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
   // Timer and progress variables
   Timer? _timer;
-  int _remainingSeconds = 150; // 2 minutes and 30 seconds
+  int _remainingSeconds = 180; 
   final int _totalPoses = 5;
   int _currentPoses = 2;
 
@@ -142,6 +145,7 @@ class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
       } else {
         timer.cancel();
         print("times up!");
+        context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
         _showRewardDialog();
       }
     });
@@ -298,7 +302,10 @@ class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
+                    
                     Navigator.of(context).pop();
+                    context.read<WandQuestData>().WandQuestWrite?.write(utf8.encode("TM"));
+                    
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),
