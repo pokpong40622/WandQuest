@@ -338,7 +338,7 @@ class _SqueezeStartLevel3State extends State<SqueezeStartLevel3> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const HomePage(),
+                                        builder: (context) =>  HomePage(),
                                       ),
                                     );
                                   },

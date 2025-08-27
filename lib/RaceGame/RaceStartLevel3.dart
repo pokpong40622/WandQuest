@@ -339,7 +339,7 @@ class _RaceStartLevel3State extends State<RaceStartLevel3> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const HomePage(),
+                                        builder: (context) =>  HomePage(),
                                       ),
                                     );
                                   },

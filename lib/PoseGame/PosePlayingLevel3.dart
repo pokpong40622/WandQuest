@@ -219,7 +219,7 @@ class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) =>  HomePage()),
                     );
                   },
                   child: Container(
@@ -301,7 +301,7 @@ class _PosePlayingLevel3State extends State<PosePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   },
                   child: Container(

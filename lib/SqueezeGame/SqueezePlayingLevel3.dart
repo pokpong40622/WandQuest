@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert'; // Required for utf8 encoding
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart'; // Required for Provider
+import 'package:wandquest/BluetoothPages.dart/WandQuestData.dart'; // Import your provider
 import 'package:wandquest/colors.dart'; // Assuming this is where ColorsAsset.primary is.
 import 'package:wandquest/Pages/HomePage.dart'; // Import your HomePage
 
@@ -82,7 +85,6 @@ class StrokedGradientText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // The Text Border (bottom layer)
         Text(
           text,
           style: GoogleFonts.poppins(
@@ -95,7 +97,6 @@ class StrokedGradientText extends StatelessWidget {
               ..color = Colors.white,
           ),
         ),
-        // The Gradient Fill (top layer)
         Text(
           text,
           style: GoogleFonts.poppins(
@@ -121,16 +122,21 @@ class SqueezePlayingLevel3 extends StatefulWidget {
 }
 
 class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
-  // Timer and progress variables
   Timer? _timer;
-  int _remainingSeconds = 150; // 2 minutes and 30 seconds
+  int _remainingSeconds = 120;
   final int _totalSqueezes = 300;
-  int _currentSqueezes = 150;
+  String currentscore = "";
+  int currentscorenum = 0;
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+  }
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<WandQuestData>().WandQuestNotify?.setNotifyValue(true);
   }
 
   void _startTimer() {
@@ -141,8 +147,20 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
         });
       } else {
         timer.cancel();
-        print("times up!");
-        _showRewardDialog(); // Show reward dialog when timer ends
+        print("Times up!");
+
+        final bluetoothData = Provider.of<WandQuestData>(
+          context,
+          listen: false,
+        );
+        try {
+          bluetoothData.WandQuestWrite?.write(utf8.encode("TM"));
+          print("Sent 'TM' successfully.");
+        } catch (e) {
+          print("Error sending 'TM' via Bluetooth: $e");
+        }
+
+        _showRewardDialog();
       }
     });
   }
@@ -157,14 +175,12 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
     super.dispose();
   }
 
-  // Helper to format the time
   String _formatTime(int seconds) {
     final minutes = (seconds / 60).floor().toString().padLeft(2, '0');
     final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
     return '$minutes:$remainingSeconds';
   }
 
-  // --- NEW REWARD DIALOG ---
   void _showRewardDialog() {
     showDialog(
       context: context,
@@ -173,7 +189,7 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(20),
@@ -187,7 +203,9 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   strokeWidth: 5,
-                  gradient: LinearGradient(colors: [Color(0xFFFE5190), Color(0xFF8827D7)]),
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFFE5190), Color(0xFF8827D7)],
+                  ),
                 ),
                 const SizedBox(height: 22),
                 const StrokedText(
@@ -206,14 +224,22 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                   fontWeight: FontWeight.w800,
                   strokeWidth: 8,
                   strokeColor: Colors.white,
-                  shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5))],
+                  shadows: [
+                    Shadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
                 ),
                 const StrokedGradientText(
                   text: 'R-POINTS',
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   strokeWidth: 4,
-                  gradient: LinearGradient(colors: [Color(0xFFF99F3B), Color(0xFFE87A1C)]),
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF99F3B), Color(0xFFE87A1C)],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(
@@ -221,34 +247,35 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   },
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                    },
-                    child: Container(
-                      width: 200,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF06A59),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                  child: Container(
+                    width: 200,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF06A59),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF4c0082),
+                        width: 3,
                       ),
-                      child: const Center(
-                        child: StrokedText(
-                          text: 'RETURN',
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          strokeWidth: 4,
-                          strokeColor: Color(0xFF4c0082),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
                         ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: StrokedText(
+                        text: 'RETURN',
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        strokeWidth: 4,
+                        strokeColor: Color(0xFF4c0082),
                       ),
                     ),
                   ),
@@ -261,7 +288,6 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
     );
   }
 
-  // --- PAUSE DIALOG ---
   void _showPauseDialog() {
     _pauseTimer();
     showDialog(
@@ -291,8 +317,17 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF63FF94),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                      border: Border.all(
+                        color: const Color(0xFF4c0082),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Center(
                       child: StrokedText(
@@ -312,7 +347,7 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   },
                   child: Container(
@@ -321,8 +356,17 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFF06A59),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                       boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
+                      border: Border.all(
+                        color: const Color(0xFF4c0082),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Center(
                       child: StrokedText(
@@ -348,31 +392,33 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final progressPercent = _currentSqueezes / _totalSqueezes;
+    final bluetoothData = Provider.of<WandQuestData>(context, listen: false);
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
           Image.asset(
-            'assets/SqueezeStartLevel3BG.png',
+            'assets/LV3Background.png',
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 decoration: BoxDecoration(gradient: ColorsAsset.primary),
-                child: const Center(child: Text('Background not found', style: TextStyle(color: Colors.white))),
+                child: const Center(
+                  child: Text(
+                    'Background not found',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               );
             },
           ),
-          // Main Content Column
           SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Column(
                 children: [
                   SizedBox(height: screenHeight * 0.042),
-                  // "SQUEEZE" Title
                   Center(
                     child: GestureDetector(
                       onTap: _showPauseDialog,
@@ -387,89 +433,113 @@ class _SqueezePlayingLevel3State extends State<SqueezePlayingLevel3> {
                       ),
                     ),
                   ),
-                  // Main content row
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Progress Bar
-                        Container(
-                          width: screenWidth * 0.35,
-                          height: screenHeight * 0.55,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              // Filled portion of the progress bar
-                              FractionallySizedBox(
-                                heightFactor: progressPercent,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [Color(0xFFF99F3B), Color(0xFFF06A59)],
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
+                  SizedBox(height: 20,),
+                  StreamBuilder<List<int>>(
+                    stream: bluetoothData.WandQuestNotify?.onValueReceived,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        final receivedData = utf8.decode(snapshot.data!);
+                        if (receivedData != currentscore) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              currentscore = receivedData;
+                              currentscorenum = int.parse(currentscore);
+                              print('currentscore: $currentscore');
+                              print('currentscorenum: $currentscorenum');
+                            });
+                          });
+                        }
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Progress Bar
+                          Container(
+                            width: screenWidth * 0.35,
+                            height: screenHeight * 0.55,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                FractionallySizedBox(
+                                  // Convert currentscore to a 0.0 - 1.0 percentage
+                                  heightFactor: (currentscorenum / 300).clamp(
+                                    0.0,
+                                    1.0,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFFF99F3B),
+                                          Color(0xFFF06A59),
+                                        ],
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                      ),
+                                      borderRadius: BorderRadius.circular(25),
                                     ),
-                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                              ),
-                              // Progress Text
-                              Positioned(
-                                bottom: 16,
-                                child: Text(
-                                  '$_currentSqueezes/$_totalSqueezes',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                Positioned(
+                                  bottom: 16,
+                                  child: Text(
+                                    '$currentscore / 300',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(width: screenWidth * 0.056),
-                        // Quest Info and Icon Column
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const StrokedText(
-                                text: 'Quest:',
-                                color: Colors.white,
-                                fontSize: 36,
-                                fontWeight: FontWeight.w800,
-                                strokeWidth: 6,
-                                strokeColor: Color(0xFF4c0082),
-                              ),
-                              const StrokedText(
-                                text: '300 TIMES',
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                strokeWidth: 6,
-                                strokeColor: Color(0xFF4c0082),
-                              ),
-                              SizedBox(height: screenHeight * 0.08),
-                              Image.asset(
-                                'assets/SqueezeIcon.png',
-                                width: screenWidth * 0.54,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.image_not_supported, size: 100, color: Colors.white,);
-                                },
-                              ),
-                            ],
+                          SizedBox(width: screenWidth * 0.056),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const StrokedText(
+                                  text: 'Quest:',
+                                  color: Colors.white,
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w800,
+                                  strokeWidth: 6,
+                                  strokeColor: Color(0xFF4c0082),
+                                ),
+                                const StrokedText(
+                                  text: '300 PTS',
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  strokeWidth: 6,
+                                  strokeColor: Color(0xFF4c0082),
+                                ),
+                                SizedBox(height: screenHeight * 0.08),
+                                Image.asset(
+                                  'assets/SqueezeIcon.png',
+                                  width: screenWidth * 0.66,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.image_not_supported,
+                                      size: 100,
+                                      color: Colors.white,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    },
                   ),
-                  // Timer at the bottom
+                  SizedBox(height: 48,),
                   Center(
                     child: StrokedGradientText(
                       text: _formatTime(_remainingSeconds),

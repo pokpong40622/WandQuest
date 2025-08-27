@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart"; // <-- import this
+import "package:provider/provider.dart";
+import "package:wandquest/BluetoothPages.dart/WandQuestData.dart";
 import "package:wandquest/MembershipPages/BMIResultPage.dart";
 import "package:wandquest/MembershipPages/LoginPage.dart";
 import "package:wandquest/MembershipPages/SignupPage.dart";
@@ -16,7 +18,12 @@ void main() async {
   // Hide status bar and navigation bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => WandQuestData(),
+      child:  MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

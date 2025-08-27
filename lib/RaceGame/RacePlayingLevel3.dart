@@ -221,14 +221,14 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) =>  HomePage()),
                     );
                   },
                   child: GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) =>  HomePage()),
                     );
                     },
                     child: Container(
@@ -312,7 +312,7 @@ class _RacePlayingLevel3State extends State<RacePlayingLevel3> {
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) =>  HomePage()),
                     );
                   },
                   child: Container(

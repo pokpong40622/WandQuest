@@ -1,12 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:wandquest/BluetoothPages.dart/FindingPage.dart';
+import 'package:wandquest/BluetoothPages.dart/FoundedPage.dart';
+import 'package:wandquest/BluetoothPages.dart/WandQuestData.dart';
 import 'package:wandquest/SqueezeGame/SqueezeStartLevel3.dart';
 import 'package:wandquest/RaceGame/RaceStartLevel3.dart';
 import 'package:wandquest/PoseGame/PoseStartLevel3.dart';
 import 'package:wandquest/colors.dart'; // Your custom colors file
-import 'package:carousel_slider/carousel_slider.dart'; 
+import 'package:carousel_slider/carousel_slider.dart';
 
 class StrokedGradientText extends StatelessWidget {
   const StrokedGradientText({
@@ -335,7 +340,10 @@ class ShopItemCard extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({super.key, this.connectionstate});
+
+  var connectionstate;
+  final connect_instance = FoundedPage();
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -372,7 +380,9 @@ class _HomePageState extends State<HomePage> {
   ];
 
   // --- NEW BLUETOOTH DIALOG ---
-  void _showBluetoothDialog(BuildContext context) {
+  void _showBluetoothDialog(BuildContext context, bool isConnected) {
+    final bluetoothData = Provider.of<WandQuestData>(context, listen: false);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -381,26 +391,28 @@ class _HomePageState extends State<HomePage> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
+              gradient: ColorsAsset.primary,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF8827D7), width: 4),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const StrokedGradientText(
+                const StrokedText(
                   text: 'Bluetooth',
-                  fontSize: 28,
+                  color: Colors.white,
+                  fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  strokeWidth: 5,
-                  gradient: LinearGradient(colors: [Color(0xFFFE5190), Color(0xFF8827D7)]),
+                  strokeWidth: 0.1,
+                  letterSpacing: 0.7,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Bluetooth is not connected.\nConnect now?",
+                  isConnected
+                      ? "Device is connected.\nDisconnect now?"
+                      : "Bluetooth is not connected.\nConnect now?",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
-                    color: const Color(0xFF4c0082),
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -410,57 +422,59 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        width: 100,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF06A59),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
-                        ),
-                        child: const Center(
-                          child: StrokedText(
-                            text: 'CANCEL',
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            strokeWidth: 0.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pop(); // Close dialog
-                        Navigator.push( // Navigate to FindingPage
-                          context,
-                          MaterialPageRoute(builder: (context) =>  FindingPage()),
-                        );
+                        bluetoothData.signOut();
+                        Navigator.of(context).pop();
                       },
                       child: Container(
-                        width: 100,
+                        width: 124,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF63FF94),
+                          color: Color(0xFFFF4646),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF4c0082), width: 3),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))],
                         ),
-                        child: const Center(
-                          child: StrokedText(
-                            text: 'CONNECT',
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            strokeWidth: 0.2,
+                        child: Center(
+                          child: Text(
+                            isConnected ? 'DISCONNECT' : 'CANCEL',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFFFFFFFF),
+                            ),
                           ),
                         ),
                       ),
                     ),
+                    if (!isConnected)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FindingPage(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 124,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3CD663),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'CONNECT',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -583,6 +597,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Permission.bluetoothScan.request();
+
+  }
+
+  void sendStringToArduino(BuildContext context, String message) {
+  // 1. Get the provider instance here, inside the function
+  final bluetoothData = Provider.of<WandQuestData>(context, listen: false);
+
+  // 2. Check if the write characteristic is available
+  if (bluetoothData.WandQuestWrite != null) {
+    try {
+      // 3. Encode the string to bytes and send it
+      bluetoothData.WandQuestWrite!.write(utf8.encode(message));
+      print("Sent '$message' successfully.");
+    } catch (e) {
+      print("Error sending message: $e");
+    }
+  } else {
+    print("Write characteristic is not available.");
+  }
+}
+
+  Future<void> _requestPermissions() async {
+    final bluetoothScan = await Permission.bluetoothScan.request();
+    final bluetoothConnect = await Permission.bluetoothConnect.request();
+    final bluetooth = await Permission.bluetooth
+        .request(); // For older versions
+    final location = await Permission.locationWhenInUse.request();
+
+    if (bluetoothScan.isGranted &&
+        bluetoothConnect.isGranted &&
+        location.isGranted) {
+      print("Permissions granted");
+    } else {
+      print("Permissions denied");
+    }
+  }
+
+
   Widget build(BuildContext context) {
     final List<Map<String, String>> currentList =
         _selectedMode == GameplayMode.single
@@ -643,26 +698,40 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        _showBluetoothDialog(context);
-                      },
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(500),
-                          color: const Color(0xFF00FF73),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.bluetooth,
-                            color: Colors.white,
-                            size: 26,
+                    Consumer<WandQuestData>(
+                      builder: (context, bluetoothData, child) {
+                        return GestureDetector(
+                          onTap: () {
+                            _showBluetoothDialog(context, bluetoothData.isConnected);
+                          },
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(500),
+                              color: bluetoothData.isConnected
+                                  ?  Color(
+                                      0xFF00FF73,
+                                    )
+                                  :  Color(
+                                      0xFFF1615D,
+                                    ), 
+                            ),
+                            child: Center(
+                              child: Icon(
+                                bluetoothData.isConnected
+                                    ? Icons.bluetooth_connected
+                                    : Icons.bluetooth_disabled,
+                                color: Colors.white,
+                                size: 26,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
+
                     const SizedBox(width: 10),
                     Container(
                       width: 42,
@@ -993,26 +1062,34 @@ class _HomePageState extends State<HomePage> {
                 final selectedCardName =
                     activeList[_currentCarouselIndex]['name'];
                 if (selectedCardName == "Squeeze") {
+                  
+                  sendStringToArduino(context, 'SS');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const SqueezeStartLevel3(),
+                      builder: (context) => SqueezeStartLevel3(),
                     ),
                   );
                 }
                 if (selectedCardName == "Race") {
+                  sendStringToArduino(context, 'RS');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const RaceStartLevel3(),
+                      builder: (context) => RaceStartLevel3(),
                     ),
                   );
                 }
                 if (selectedCardName == "Pose") {
+
+                  sendStringToArduino(context, 'PS');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const PoseStartLevel3(),
+                      builder: (context) => PoseStartLevel3(),
                     ),
                   );
                 }
