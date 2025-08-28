@@ -232,6 +232,55 @@ void _showPlayerFoundDialog() {
                       ],
                     ),
                   ),
+                  Center(
+                    child: Container(
+                      width: 238,
+                      height: 60,
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 32,
+                              width: 32,
+                              child: Image.asset(
+                                'assets/TimProfile.png',
+                                width: 28,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(500),
+                                
+                              ),
+                            ),
+                            SizedBox(width: 16,),
+                            Text(
+                              'Tim4173',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              height: 18,
+                              width: 18,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(500),
+                                color: Color(0xFF00FF4D)
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14)
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 25),
                   Text(
                     "Starting in... $dialogCountdown",
