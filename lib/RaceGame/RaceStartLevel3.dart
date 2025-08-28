@@ -174,7 +174,6 @@ class _RaceStartLevel3State extends State<RaceStartLevel3> {
   }
   
   // Player Found Dialog
-  // Player Found Dialog
 void _showPlayerFoundDialog() {
   int dialogCountdown = 3;
   showDialog(
